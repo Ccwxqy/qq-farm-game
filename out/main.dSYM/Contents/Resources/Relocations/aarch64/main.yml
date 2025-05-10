@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/chaowenqiang/Documents/qq-farm-game/out/main'
+relocations:     []
+...

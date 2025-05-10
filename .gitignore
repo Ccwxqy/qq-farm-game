@@ -1,0 +1,6 @@
+# 忽略构建文件夹和临时文件
+build/
+*.o
+*.out
+*.exe
+.DS_Store
