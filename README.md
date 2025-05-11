@@ -21,6 +21,8 @@ g++ -std=c++17 main.cpp -o qqfarm
 ./qqfarm
 
 
+<details>
+
 ## 项目结构示意图（开发初期）
 
 '''plaintext
@@ -32,7 +34,7 @@ qq-farm-game/
 |--.vscode/        # VS Code 配置
 |--README.md       # 项目说明文件
 '''
-
+</details>
 
 
 
