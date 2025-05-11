@@ -23,9 +23,9 @@ g++ -std=c++17 main.cpp -o qqfarm
 
 <details>
 
-## 项目结构示意图（开发初期）
+<summary>📕 项目结构示意图（开发初期）</summary>
 
-'''plaintext
+```plaintext
 qq-farm-game/
 |--main.cpp        # 主程序入口
 |--farm.cpp/.h     # 农田管理模块（待实现）
@@ -33,7 +33,7 @@ qq-farm-game/
 |--market.cpp/.h   # 商店逻辑
 |--.vscode/        # VS Code 配置
 |--README.md       # 项目说明文件
-'''
+```
 </details>
 
 
