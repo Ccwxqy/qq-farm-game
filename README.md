@@ -23,6 +23,7 @@ g++ -std=c++17 main.cpp -o qqfarm
 
 ## 项目结构示意图（开发初期）
 
+'''plaintext
 qq-farm-game/
 |--main.cpp        # 主程序入口
 |--farm.cpp/.h     # 农田管理模块（待实现）
@@ -30,3 +31,9 @@ qq-farm-game/
 |--market.cpp/.h   # 商店逻辑
 |--.vscode/        # VS Code 配置
 |--README.md       # 项目说明文件
+'''
+
+
+
+
+> 本项目当前未设置开源协议，如需参考或使用请联系作者
