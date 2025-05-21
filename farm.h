@@ -4,6 +4,31 @@
 #include<string>
 #include<vector>
 #include<memory>
+#include<map>
+
+// 作物元数据结构
+struct CropInfo{
+    std::string name;
+    int growDays;
+    int cost;
+    int sellPrice;
+};
+
+
+class Player{
+    private:
+        int coins;
+    
+    public:
+        Player(int startingCoins = 100);    //初始金币
+        bool canAfford(int amount) const;
+        void spend(int amount);
+        void earn(int amount);
+        void displayStatus() const;
+};
+
+// 作物商店： 名字 -> 属性映射
+extern const std::map<std::string, CropInfo> cropDatabase;
 
 //作物类：目前简化为名称 + 是否成熟
 class Crop{
@@ -25,6 +50,7 @@ class Plot{
 
         Plot(int id);
         void plantCrop(const std::string& cropName);
+        void plantCrop(const std::string& cropName, int requiredGrowDays);
         void grow();    //增长一次
         void harvest(); //收获作物
         void displayStatus() const;
@@ -37,11 +63,13 @@ class Farm{
     
     public:
         Farm(int size);//初始化指定数量田块
-        void plantAt(int plotId, const std::string& cropName);
+        void plantAt(int plotId, const std::string& cropName, Player& player);
         void growAll();
-        void harvestAt(int plotId);
+        void harvestAt(int plotId, Player& Player);
         void displayFarm() const;
 };
+
+
 
 
 

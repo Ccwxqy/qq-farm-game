@@ -1,5 +1,12 @@
 #include "farm.h"
 #include <iostream>
+#include<map>
+
+const std::map<std::string, CropInfo> cropDatabase = {
+    {"玉米", {"玉米", 3, 10, 25}},
+    {"番茄", {"番茄", 4, 15, 30}},
+    {"西瓜", {"西瓜", 5, 25, 50}}
+};
 
 // ===== Crop 实现 =====
 Crop::Crop(const std::string& name, int required): name(name), growth(0), growth_required(required){
@@ -23,6 +30,16 @@ void Plot::plantCrop(const std::string& cropName){
     crop = std::make_unique<Crop>(cropName, 3); //成熟需要3轮
     hasCrop = true;
     std::cout << "田块" << id << "种下了： " << cropName << std::endl;
+}
+
+void Plot::plantCrop(const std::string& cropName, int requiredGrowDays){
+    if(hasCrop){
+        std::cout<< "田块 " << id << " 已有作物，不能重复种植。 \n";
+        return;
+    }
+    crop = std::make_unique<Crop>(cropName, requiredGrowDays);
+    hasCrop = true;
+    std::cout<< "田块 " << id << " 种下了： " << cropName << std::endl;
 }
 
 void Plot::grow(){
@@ -65,9 +82,22 @@ Farm::Farm(int size){
     }
 }
 
-void Farm::plantAt(int plotId, const std::string& cropName){
+void Farm::plantAt(int plotId, const std::string& cropName, Player& player){
     if(plotId >= 0 && plotId < static_cast<int>(plots.size())){
-        plots[plotId].plantCrop(cropName);
+        auto it = cropDatabase.find(cropName);
+        if(it == cropDatabase.end()){
+            std::cout<< "❌ 商店中没有这种作物： "<< cropName << " \n";
+            return;
+        }
+
+        int cost = it -> second.cost;
+        if(!player.canAfford(cost)){
+            std::cout<< "❌ 金币不足，无法种植：" << cropName << "\n";
+            return;
+        }
+        plots[plotId].plantCrop(cropName, it -> second.growDays);   //重载 playtCrop
+        player.spend(cost);
+        std::cout << "💰 花费 " << cost << " 元种下了 " << cropName << "\n";
     }else{
         std::cout << "❌ 无效的田块编号 \n";
     }
@@ -79,9 +109,20 @@ void Farm::growAll(){
     }
 }
 
-void Farm::harvestAt(int plotId){
+void Farm::harvestAt(int plotId, Player& player){
     if(plotId >= 0 && plotId < static_cast<int>(plots.size())){
-        plots[plotId].harvest();
+        Plot& plot = plots[plotId];
+        if(plot.hasCrop && plot.crop && plot.crop -> isMature()){
+            std::string cropName = plot.crop -> name;
+            auto it = cropDatabase.find(cropName);
+            if(it != cropDatabase.end()){
+                int value = it -> second.sellPrice;
+                player.earn(value);
+                std::cout<< "💰 收获后获得收益：" << value << " 元\n";
+            }
+        }
+        plot.harvest(); // 自动清空
+        
     }else{
         std::cout << "❌ 无效的田块编号 \n";
     }
@@ -91,4 +132,22 @@ void Farm::displayFarm() const{
     for(const auto& plot : plots){
         plot.displayStatus();
     }
+}
+
+Player::Player(int startingCoins): coins(startingCoins){}
+
+bool Player::canAfford(int amount) const{
+    return coins >= amount;
+}
+
+void Player::spend(int amount){
+    if(canAfford(amount)) coins -= amount;
+}
+
+void Player::earn(int amount){
+    coins += amount;
+}
+
+void Player::displayStatus() const{
+    std::cout<< "💰 当前金币： "<< coins <<" 元\n";
 }
