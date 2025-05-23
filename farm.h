@@ -18,13 +18,28 @@ struct CropInfo{
 class Player{
     private:
         int coins;
+        int level;
+        int experience;
+        std::map<std::string, int>inventory;    //背包： 作物名称 -> 数量
     
     public:
         Player(int startingCoins = 100);    //初始金币
+
+        //  金币
         bool canAfford(int amount) const;
         void spend(int amount);
         void earn(int amount);
         void displayStatus() const;
+
+        //  背包系统
+        void addCrop(const std::string& name);
+        void displayInventory() const;
+        void sellCrop(const std::string& name, int quantity);
+
+        //  玩家等级进阶
+        void gainExp(int anout);
+        void checkLevelUp();
+       
 };
 
 // 作物商店： 名字 -> 属性映射
@@ -69,6 +84,14 @@ class Farm{
         void displayFarm() const;
 };
 
+enum class Weather{
+    Sunny,
+    Rainy,
+    Drought
+};
+
+extern Weather todayWeather;
+void generateWeather();
 
 
 

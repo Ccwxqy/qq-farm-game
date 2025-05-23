@@ -1,6 +1,8 @@
 #include "farm.h"
 #include <iostream>
 #include<map>
+#include<cstdlib>
+#include<ctime>
 
 const std::map<std::string, CropInfo> cropDatabase = {
     {"玉米", {"玉米", 3, 10, 25}},
@@ -105,7 +107,21 @@ void Farm::plantAt(int plotId, const std::string& cropName, Player& player){
 
 void Farm::growAll(){
     for(auto& plot : plots){
-        plot.grow();
+        switch (todayWeather){
+            case Weather::Sunny:{
+                plot.grow();
+                break;
+            }
+            case Weather::Rainy:{
+                plot.grow();
+                plot.grow();
+                break;
+            }
+            case Weather::Drought:{
+                break;
+            }
+        }
+        
     }
 }
 
@@ -116,9 +132,9 @@ void Farm::harvestAt(int plotId, Player& player){
             std::string cropName = plot.crop -> name;
             auto it = cropDatabase.find(cropName);
             if(it != cropDatabase.end()){
-                int value = it -> second.sellPrice;
-                player.earn(value);
-                std::cout<< "💰 收获后获得收益：" << value << " 元\n";
+                player.addCrop(cropName);
+                player.gainExp(it -> second.sellPrice);
+                std::cout<< "🌳 已经收获并放入背包中\n";
             }
         }
         plot.harvest(); // 自动清空
@@ -150,4 +166,78 @@ void Player::earn(int amount){
 
 void Player::displayStatus() const{
     std::cout<< "💰 当前金币： "<< coins <<" 元\n";
+    std::cout << "当前等级： " << level << "   当前经验： " << experience << "\n";
+}
+
+void Player::addCrop(const std::string& name){
+    inventory[name]++;
+    std::cout << "🎒 背包中新增作物： " << name << " x1\n";
+}
+
+void Player::displayInventory() const{
+    std::cout << "🎒 背包内容： \n";
+    if(inventory.empty()){
+        std::cout << "（空）\n";
+        return;
+    }
+    for(const auto& pair : inventory){
+        std::cout << "- " << pair.first << " x" << pair.second << "\n";
+    }
+}
+
+void Player::sellCrop(const std::string& name, int quantity){
+    auto it = inventory.find(name);
+    if(it == inventory.end() || it -> second < quantity){
+        std::cout << "❌ 背包中该作物数量不足！ \n";
+        return;
+    }
+
+    auto cropIt = cropDatabase.find(name);
+    if(cropIt == cropDatabase.end()){
+        std::cout << "❌ 无法识别该作物！ \n";
+        return;
+    }
+
+    int income = cropIt -> second.sellPrice * quantity;
+    it -> second -= quantity;
+    if(it -> second == 0){
+        inventory.erase(it);
+    }
+    earn(income);
+
+    std::cout << "✅ 卖出 " << name << " x" << quantity << ", 获得金币： " << income << "\n";
+}
+
+void Player::gainExp(int amount ){
+    experience += amount;
+    std::cout << "获得经验： " << amount << " 点\n";
+    checkLevelUp();
+}
+
+void Player::checkLevelUp(){
+    while(experience >= level * 50){
+        experience -= level * 50;
+        level++;
+        std::cout << "🎉 升级！ 当前等级： " << level << "\n";
+    }
+}
+
+
+Weather todayWeather;
+
+void generateWeather(){
+    int r = rand() % 3;
+    todayWeather = static_cast<Weather>(r);
+
+    switch (todayWeather){
+        case Weather::Sunny:
+            std::cout << "🌞 今日天气： 晴天（正常成长）\n";
+            break;
+        case Weather::Rainy:
+            std::cout << "🌧️ 今日天气： 雨天（额外成长 + 1)\n";
+            break;
+        case Weather::Drought:
+            std::cout << "☀️ 今日天气： 干旱(不成长)\n";
+            break;
+    }
 }

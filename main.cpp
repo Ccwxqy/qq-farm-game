@@ -10,6 +10,8 @@ void showMenu(){
     std::cout<<  "4. 收获作物\n";
     std::cout<<  "5. 查看金币\n";
     std::cout<<  "6. 退出游戏\n";
+    std::cout<<  "7. 查看背包\n";
+    std::cout<<  "8. 出售作物\n";
     std::cout<<  "请选择操作编号： ";
 
 }
@@ -63,6 +65,20 @@ int main(){
             case 6: {
                 std::cout << "👏 游戏结束，再见！ \n";
                 running = false;
+                break;
+            }
+            case 7: {
+                player.displayInventory();
+                break;
+            }
+            case 8: {
+                std::string name;
+                int count;
+                std::cout << "输入出售作物名称： ";
+                std::cin >> name;
+                std::cout << "输入数量： ";
+                std::cin >> count;
+                player.sellCrop(name, count);
                 break;
             }
             default:
